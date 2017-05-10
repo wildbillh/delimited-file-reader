@@ -1,0 +1,30 @@
+{
+  "name": "delimited-file-reader",
+  "version": "1.0.0",
+  "description": "Reads delimited text files and delivers records in object format",
+  "main": "./lib/delimited-file-reader.js",
+  "directories": {
+    "lib": "./lib",
+    "doc": "./doc",
+    "test": "./test",
+    "example": "./example"
+  },
+  "scripts": {
+    "test": "node_modules/.bin/mocha -t 10000 --async-only --reporter spec --ui bdd test",
+    "generateDocs": "node_modules/.bin/jsdoc lib/delimited-file-reader.js -d doc"
+  },
+  "keywords": [
+    "delimited",
+    "file",
+    "read",
+    "es6",
+    "class"
+  ],
+  "author": "Bill Hodges",
+  "license": "MIT",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "jsdoc": "^3.4.3",
+    "mocha": "^3.3.0"
+  }
+}
