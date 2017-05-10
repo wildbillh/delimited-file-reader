@@ -1,5 +1,5 @@
 #DelimitedFileReader
-[![Build Status](https://travis-ci.org/wildbillh/hybrid-array-runner.svg?branch=master)](https://travis-ci.org/wildbillh/hybrid-array-runner)[![Inline docs](http://inch-ci.org/github/wildbillh/hybrid-array-runner.svg?branch=master)](http://inch-ci.org/github/wildbillh/hybrid-array-runner)[![npm version](https://badge.fury.io/js/hybrid-array-runner.svg)](https://badge.fury.io/js/hybrid-array-runner)
+[![Build Status](https://travis-ci.org/wildbillh/delimited-file-reader.svg?branch=master)](https://travis-ci.org/wildbillh/delimited-file-reader)[![Inline docs](http://inch-ci.org/github/wildbillh/delimited-file-reader.svg?branch=master)](http://inch-ci.org/github/wildbillh/delimited-file-reader)[![npm version](https://badge.fury.io/js/delimited-file-reader.svg)](https://badge.fury.io/js/delimited-file-reader)
 
 _A promise enabled, ES6 Class for reading delimited text files and 
 emitting the records as objects._  
