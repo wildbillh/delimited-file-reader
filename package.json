@@ -1,6 +1,6 @@
 {
   "name": "delimited-file-reader",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Reads delimited text files and delivers records in object format",
   "main": "./lib/delimited-file-reader.js",
   "directories": {
