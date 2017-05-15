@@ -9,7 +9,7 @@ emitting the records as objects._
 Read the given file, listen to the various events to get the data:
 
 ```javascipt
-const DelimitedFileReader = require('../lib/delimited-file-reader');
+const DelimitedFileReader = require('delimited-file-reader');
 
 let fileReader = new DelimitedFileReader(',');
 
