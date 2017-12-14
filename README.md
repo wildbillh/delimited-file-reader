@@ -25,7 +25,9 @@ fileReader.on('close', () => {
     console.log('Elvis has left the building!');
 });
 
+// The parse method takes a string filename or a read stream as an argument.
 fileReader.parse('./simple-example.csv');
+
 
 // comment: # Example file using comma delimited format with comments
 // data: {"field_0":"value1-1","field_1":"value2-2"}
@@ -48,7 +50,7 @@ The following are configurable.
 
 
 **In simpler terms:** 
-* I have a delimited text file with lf or lf\cr as record delimiters. 
+* I have a delimited text file or stream with lf or lf\cr as record delimiters. 
 * The column delimiter can be expressed as a string or regular expresssion.
 * They're may be comments in the file using a defined string in the starting position.
 * I want to read the file and process each record as an object.

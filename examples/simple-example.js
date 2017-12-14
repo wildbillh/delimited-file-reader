@@ -19,7 +19,7 @@ fileReader.on('close', () => {
     console.log('Elvis has left the building!');
 });
 
-fileReader.parse('./simple-example.txt');
+fileReader.parse('./simple-example.csv');
 
 // comment: # Example file using comma delimited format with comments
 // data: {"field_0":"value1-1","field_1":"value2-2"}
