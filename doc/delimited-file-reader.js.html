@@ -34,8 +34,8 @@
 
 const EventEmitter = require('events');
 const readline = require('readline');
+const stream = require('stream');
 const fs = require('fs');
-const getStreamFromFile = require('./utils').getStreamFromFile;
 
 /**
  * A simple class for reading a delimited text file and output-ing each record as an object.
@@ -62,7 +62,8 @@ class DelimitedFileReader extends EventEmitter {
 
     /**
      * Constructor. Sets the delimiter, column names and comment character
-     * @param {regex} [delimiter=/[,]/] Regex delimiter used to separate fields
+     * @param {
+     * @param [delimiter=/[,]/] Regex delimiter used to separate fields
      * @param {string[]} [fields=[]] Array of Field names to apply to the fields
      * @param {string} [commentChar='#'] Character to indicate a comment, when found in first position
      */
@@ -82,37 +83,51 @@ class DelimitedFileReader extends EventEmitter {
     /**
      * Parse the given filename. Prior to this call the user has subscribed to
      * the various events. If the promise is resolved, the reading will begin.
-     * @param {string} filename - File to parse
-     * @returns {Promise} If the file is opened successfully the promise is resolved.
+     * @param {string | stream} filenameOrStream - String filename or readable stream
+     * @returns {Promise} Resolves and returns the stream if everything is OK.
      */
-    parse (filename) {
+    parse (filenameOrStream) {
         return new Promise( (resolve, reject) => {
+
             let rl = null;
-            getStreamFromFile(filename, true)
-            .then( (stream) => {
-                this.inputStream = stream;
-                return (stream);
+            Promise.resolve()
+            .then(() =>{
+                // If we are passed a string, attempt to open the filename
+                if (typeof filenameOrStream === 'string') {
+                    return this.getStreamFromFile(filenameOrStream, true)
+                }
+                // If it's a readable stream then simply pass it
+                else if (filenameOrStream instanceof stream.Stream &amp;&amp; filenameOrStream['readable']){
+                    return Promise.resolve(filenameOrStream);
+                }
+                // It's neither a string or stream, so reject
+                else {
+                    return Promise.reject('Expected string filename or readable stream');
+                }
             })
             .then ( (stream) => {
+                // Create the readline interface
                 rl = readline.createInterface({
                     input: stream
                 });
 
+                // Call our function for each line
                 rl.on('line', (line) => {
                     this.processLine(line);
                 });
 
+                // After the last line is read, emit a close event with some stats
                 rl.on('close', () => {
                     let statsObject = {
                         records: this.numberOfValidRecords,
                         comments: this.numberOfComments,
                         errors: this.numberOfInvalidRecords
                     };
-                    this.emit('close', statsObject);
+                    this['emit']('close', statsObject);
                 });
 
                 rl.on('error', (err) => {
-                    this.emit('error', err);
+                    this['emit']('error', err);
                 });
 
                 return resolve(stream);
@@ -123,16 +138,44 @@ class DelimitedFileReader extends EventEmitter {
         });
     }
 
+
+
     /**
      * @private
-     * Internal function used to split each line into an object
-     * @param line
+     * Opens the given file and returns a read or write stream
+     * @param {string} filename - File to open
+     * @param {boolean} isRead - True if generated a read stream, false for a write stream
+     * @param {{}} streamOptions - Stream options object. See the nodejs doc for more details
+     * @returns {Promise}
+     */
+    getStreamFromFile(filename, isRead = true, streamOptions) {
+        return new Promise((resolve, reject) => {
+            let stream = null;
+
+            stream = isRead ? fs.createReadStream(filename, streamOptions) : fs.createWriteStream(filename, streamOptions);
+
+            stream.on('error', (err) => {
+                return reject(err.toString());
+            });
+
+            stream.on('open', () => {
+                return resolve(stream);
+            })
+
+        });
+    }
+
+
+    /**
+     * @private
+     * Given the line from the file, turn it into an object emit the proper event
+     * @param {string} line - The line from the text file
      */
     processLine (line) {
         // Send a comment event if it's a comment
         if (line.charAt(0) === this.commentChar) {
             this.numberOfComments++;
-            this.emit('comment', line);
+            this['emit']('comment', line);
             return;
         }
 
@@ -143,22 +186,23 @@ class DelimitedFileReader extends EventEmitter {
         if (this.fields.length > 0) {
             if (this.fields.length !== splitArray.length ) {
                 this.numberOfInvalidRecords++;
-                this.emit('invalid', line, splitArray);
+                this['emit']('invalid', line, splitArray);
             }
             else {
                 this.fields.forEach((fieldName, index) => {
                     returnObject[fieldName] = splitArray[index];
                 });
                 this.numberOfValidRecords++;
-                this.emit('data', returnObject);
+                this['emit']('data', returnObject);
             }
         }
         else {
             // we have to generate field names
             splitArray.forEach( (element, index) => {
                 returnObject[`field_${index}`] = splitArray[index];
-                this.emit('data', returnObject);
             });
+            this.numberOfValidRecords++;
+            this['emit']('data', returnObject);
         }
 
     }
@@ -183,7 +227,7 @@ module.exports = DelimitedFileReader;</code></pre>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Wed May 10 2017 10:34:28 GMT-0400 (Eastern Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Thu Dec 14 2017 07:18:21 GMT-0500 (Eastern Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>
